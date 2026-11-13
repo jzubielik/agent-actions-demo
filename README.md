@@ -6,7 +6,7 @@ A small order system that uses [agent-actions](https://github.com/jzubielik/agen
 
 | Part | What it is |
 |---|---|
-| `services/orders` | The orders API (Python, FastAPI, SQLite): create, read, list, place and pay an order, with discount codes |
+| `services/orders` | The orders API (Python, FastAPI, SQLite): create, read, list, place, pay and cancel an order, with discount codes |
 | `services/billing` | Builds invoices from paid orders (Python). It reads orders through the API and is tested against the real service |
 | `services/web` | The API client and the view model of the order page (TypeScript), with types generated from the contract |
 | `contracts/orders.openapi.yaml` | The API contract, generated from the service |

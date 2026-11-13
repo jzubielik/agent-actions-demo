@@ -36,6 +36,13 @@ test("a new order is sent as JSON", async () => {
   expect(JSON.parse(String(calls[0]?.init?.body))).toEqual(body);
 });
 
+test("an order is cancelled with a POST to its cancel path", async () => {
+  const { calls, fetcher } = fakeFetch(200, { ...order, status: "cancelled" });
+  const cancelled = await new OrdersApi("https://api.test", fetcher).cancelOrder("o 1");
+  expect(cancelled.status).toBe("cancelled");
+  expect(calls[0]).toMatchObject({ url: "https://api.test/orders/o%201/cancel", init: { method: "POST" } });
+});
+
 test("an error carries the status and the detail of the API", async () => {
   const { fetcher } = fakeFetch(409, { detail: "an order that is paid cannot become placed" });
   const error = await new OrdersApi("https://api.test", fetcher).placeOrder("o-1").catch((e: unknown) => e);

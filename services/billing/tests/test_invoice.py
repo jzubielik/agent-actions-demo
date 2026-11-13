@@ -40,6 +40,16 @@ def test_only_a_paid_order_is_invoiced(api, orders):
         build_invoice(orders.get_order(order_id), VAT)
 
 
+def test_a_cancelled_order_is_not_invoiced(api, orders):
+    body = {"customer_id": "c-1", "currency": "EUR", "items": [{"sku": "book", "quantity": 1, "unit_price_minor": 100}]}
+    order_id = api.post("/orders", json=body).json()["id"]
+    api.post(f"/orders/{order_id}/place")
+    api.post(f"/orders/{order_id}/cancel")
+    with pytest.raises(InvoiceError, match="is cancelled"):
+        build_invoice(orders.get_order(order_id), VAT)
+    assert orders.paid_orders("c-1") == []
+
+
 def test_an_order_that_does_not_add_up_is_not_invoiced(orders, paid_order):
     order = orders.get_order(paid_order())
     with pytest.raises(InvoiceError, match="do not add up"):

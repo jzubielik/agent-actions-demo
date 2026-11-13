@@ -13,6 +13,7 @@ test("a draft shows its lines, amounts and that it can be placed", () => {
     total: "€26.99",
     placed: "4 Mar 2026",
     canPlace: true,
+    canCancel: true,
   });
 });
 
@@ -20,6 +21,12 @@ test("a discount is shown as a negative amount", () => {
   const summary = summarize({ ...order, discount_code: "SPRING10", discount_minor: 270, total_minor: 2429 }, "en-IE");
   expect(summary.discount).toBe("-€2.70");
   expect(summary.total).toBe("€24.29");
+});
+
+test("an order can be cancelled until it is paid", () => {
+  expect(summarize({ ...order, status: "placed" }, "en-IE").canCancel).toBe(true);
+  expect(summarize({ ...order, status: "paid" }, "en-IE").canCancel).toBe(false);
+  expect(summarize({ ...order, status: "cancelled" }, "en-IE")).toMatchObject({ status: "Cancelled", canPlace: false, canCancel: false });
 });
 
 test("only a draft can be placed", () => {

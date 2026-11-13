@@ -32,3 +32,5 @@ web:
     - "[].total_minor"
     - "[].currency"
     - "[].created_at"
+  POST /orders/{order_id}/cancel:
+    - status

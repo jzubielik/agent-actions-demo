@@ -41,6 +41,10 @@ export class OrdersApi {
     return this.request(`/orders/${encodeURIComponent(id)}/place`, { method: "POST" });
   }
 
+  cancelOrder(id: string): Promise<Order> {
+    return this.request(`/orders/${encodeURIComponent(id)}/cancel`, { method: "POST" });
+  }
+
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
     const response = await this.fetcher(`${this.baseUrl}${path}`, init);
     if (!response.ok) throw new ApiError(response.status, await detailOf(response));
