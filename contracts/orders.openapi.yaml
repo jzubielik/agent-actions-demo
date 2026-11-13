@@ -227,7 +227,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Unprocessable Content
+          description: The order is not valid or its discount code is unknown
       summary: Create Order
   /orders/{order_id}:
     get:
@@ -251,7 +251,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Not Found
+          description: No order with this id
         '422':
           content:
             application/json:
@@ -281,13 +281,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Not Found
+          description: No order with this id
         '409':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Conflict
+          description: The status of the order does not allow this
         '422':
           content:
             application/json:
@@ -317,13 +317,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Not Found
+          description: No order with this id
         '409':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-          description: Conflict
+          description: The status of the order does not allow this
         '422':
           content:
             application/json:

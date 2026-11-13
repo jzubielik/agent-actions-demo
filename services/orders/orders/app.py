@@ -20,14 +20,23 @@ def create_app(database: str | None = None) -> FastAPI:
 
     Db = Annotated[sqlite3.Connection, Depends(db)]
 
-    @app.post("/orders", response_model=Order, status_code=201, responses={422: {"model": Problem}})
+    # Every response is described here: the default text comes from Python's list of HTTP
+    # statuses, which differs between versions, and the contract must not.
+    not_found = {"model": Problem, "description": "No order with this id"}
+
+    @app.post(
+        "/orders",
+        response_model=Order,
+        status_code=201,
+        responses={422: {"model": Problem, "description": "The order is not valid or its discount code is unknown"}},
+    )
     def create_order(new: NewOrder, conn: Db) -> Order:
         try:
             return repository.create(conn, new)
         except repository.UnknownDiscount as error:
             raise HTTPException(422, f"unknown discount code: {error}") from error
 
-    @app.get("/orders/{order_id}", response_model=Order, responses={404: {"model": Problem}})
+    @app.get("/orders/{order_id}", response_model=Order, responses={404: not_found})
     def get_order(order_id: str, conn: Db) -> Order:
         try:
             return repository.get(conn, order_id)
@@ -51,7 +60,7 @@ def create_app(database: str | None = None) -> FastAPI:
         except repository.WrongStatus as error:
             raise HTTPException(409, str(error)) from error
 
-    transition = {404: {"model": Problem}, 409: {"model": Problem}}
+    transition = {404: not_found, 409: {"model": Problem, "description": "The status of the order does not allow this"}}
 
     @app.post("/orders/{order_id}/place", response_model=Order, responses=transition)
     def place_order(order_id: str, conn: Db) -> Order:

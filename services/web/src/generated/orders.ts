@@ -220,7 +220,7 @@ export interface operations {
                     "application/json": components["schemas"]["Order"];
                 };
             };
-            /** @description Unprocessable Content */
+            /** @description The order is not valid or its discount code is unknown */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -251,7 +251,7 @@ export interface operations {
                     "application/json": components["schemas"]["Order"];
                 };
             };
-            /** @description Not Found */
+            /** @description No order with this id */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -291,7 +291,7 @@ export interface operations {
                     "application/json": components["schemas"]["Order"];
                 };
             };
-            /** @description Not Found */
+            /** @description No order with this id */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -300,7 +300,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description Conflict */
+            /** @description The status of the order does not allow this */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -340,7 +340,7 @@ export interface operations {
                     "application/json": components["schemas"]["Order"];
                 };
             };
-            /** @description Not Found */
+            /** @description No order with this id */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -349,7 +349,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description Conflict */
+            /** @description The status of the order does not allow this */
             409: {
                 headers: {
                     [name: string]: unknown;
