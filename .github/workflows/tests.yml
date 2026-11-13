@@ -34,6 +34,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # A pull request is checked out as its merge commit; its first parent is the base branch.
+          fetch-depth: 2
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
@@ -42,13 +44,10 @@ jobs:
         run: make check
       - name: Changes that break a client of the contract on the base branch
         if: github.event_name == 'pull_request'
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
         # A warning, not a failure: a breaking change is allowed when no consumer reads the
         # field, and the step above and the tests of the consumers decide that.
         run: |
-          git fetch --quiet --depth=1 origin "$BASE"
-          git show "$BASE:contracts/orders.openapi.yaml" >"$RUNNER_TEMP/base-contract.yaml"
+          git show "HEAD^1:contracts/orders.openapi.yaml" >"$RUNNER_TEMP/base-contract.yaml"
           if ! python tools/contract.py diff "$RUNNER_TEMP/base-contract.yaml" >"$RUNNER_TEMP/breaking.txt"; then
             sed 's/^/::warning title=Breaking change of the contract::/' "$RUNNER_TEMP/breaking.txt"
           fi
