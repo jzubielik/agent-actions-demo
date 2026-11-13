@@ -1,0 +1,20 @@
+{
+  "taken_at": "2026-11-10T06:00:00Z",
+  "note": "Invented numbers for this demo repository. A real project would read them from its monitoring.",
+  "tables": {
+    "orders": {"rows": 48200000, "size_mb": 21400, "writes_per_minute": 950, "largest_lock_tolerated_ms": 200},
+    "order_items": {"rows": 131000000, "size_mb": 30800, "writes_per_minute": 2600, "largest_lock_tolerated_ms": 200},
+    "discount_codes": {"rows": 340, "size_mb": 1, "writes_per_minute": 0, "largest_lock_tolerated_ms": 5000},
+    "schema_migrations": {"rows": 3, "size_mb": 1, "writes_per_minute": 0, "largest_lock_tolerated_ms": 5000}
+  },
+  "errors": {
+    "orders": [
+      {"count_24h": 12, "where": "orders/repository.py:move", "error": "WrongStatus: the order is no longer placed", "first_seen": "2026-08-02"}
+    ],
+    "billing": [
+      {"count_24h": 311, "where": "billing/invoice.py:build_invoice", "error": "InvoiceError: the lines and the discount do not add up to the total", "first_seen": "2026-11-08"},
+      {"count_24h": 4, "where": "billing/client.py:get_order", "error": "OrdersError: order not found", "first_seen": "2026-05-19"}
+    ],
+    "web": []
+  }
+}

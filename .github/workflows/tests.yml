@@ -1,0 +1,68 @@
+name: Tests
+permissions: {}
+on:
+  # ready_for_review too: the AI review starts from these runs, also for a draft marked ready.
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+jobs:
+  python:
+    name: orders, billing, tools
+    runs-on: ${{ vars.AGENT_ACTIONS_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet -r requirements.txt
+      - run: make orders
+      - run: make billing
+      - run: make tools
+  contract:
+    name: contract
+    runs-on: ${{ vars.AGENT_ACTIONS_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet -r requirements.txt
+      - name: The contract is what the service serves, and consumers read fields it has
+        run: make check
+      - name: Changes that break a client of the contract on the base branch
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        # A warning, not a failure: a breaking change is allowed when no consumer reads the
+        # field, and the step above and the tests of the consumers decide that.
+        run: |
+          git fetch --quiet --depth=1 origin "$BASE"
+          git show "$BASE:contracts/orders.openapi.yaml" >"$RUNNER_TEMP/base-contract.yaml"
+          if ! python tools/contract.py diff "$RUNNER_TEMP/base-contract.yaml" >"$RUNNER_TEMP/breaking.txt"; then
+            sed 's/^/::warning title=Breaking change of the contract::/' "$RUNNER_TEMP/breaking.txt"
+          fi
+  web:
+    name: web
+    runs-on: ${{ vars.AGENT_ACTIONS_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - run: make web

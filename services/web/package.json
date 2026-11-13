@@ -1,0 +1,16 @@
+{
+  "name": "web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen": "openapi-typescript ../../contracts/orders.openapi.yaml -o src/generated/orders.ts",
+    "gen:check": "openapi-typescript ../../contracts/orders.openapi.yaml -o src/generated/orders.ts --check",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}

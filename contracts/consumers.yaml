@@ -1,0 +1,34 @@
+# Which service reads which response field of the orders API. A field listed here cannot be
+# removed or retyped without changing that service in the same pull request.
+# Paths: "items[].sku" is the field sku of each element of items; "[]" is each element of a list.
+billing:
+  GET /orders/{order_id}:
+    - id
+    - customer_id
+    - currency
+    - status
+    - items[].sku
+    - items[].quantity
+    - items[].unit_price_minor
+    - discount_minor
+    - total_minor
+  GET /orders:
+    - "[].id"
+web:
+  GET /orders/{order_id}:
+    - id
+    - currency
+    - status
+    - items[].sku
+    - items[].quantity
+    - items[].unit_price_minor
+    - subtotal_minor
+    - discount_minor
+    - total_minor
+    - created_at
+  GET /orders:
+    - "[].id"
+    - "[].status"
+    - "[].total_minor"
+    - "[].currency"
+    - "[].created_at"

@@ -1,8 +1,16 @@
 name: AI review
 permissions: {}
 on:
+  # Only for the override label; the review itself starts from Tests.
   pull_request:
     types: [labeled, unlabeled]
+  # /review from someone with write access.
+  issue_comment:
+    types: [created]
+  # requested: the gate waits for Tests; completed: the review runs with its logs.
+  workflow_run:
+    workflows: [Tests]
+    types: [requested, completed]
 jobs:
   review:
     uses: jzubielik/agent-actions/.github/workflows/review.yml@v1.0.0
@@ -13,6 +21,16 @@ jobs:
       statuses: write
       actions: read
       id-token: write
+    with:
+      # Review once Tests finished, with its logs, instead of at the push.
+      wait_for_ci: Tests
+      # The MCP server of this repository; it starts from the checkout of the base branch.
+      mcp_config: '{"prod_stats":{"command":"python3","args":["tools/prod_stats/server.py"]}}'
+      extra_allowed_tools: mcp__prod_stats__table_stats,mcp__prod_stats__recent_errors
     secrets:
       ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_KEY }}
+      # agent-actions is a private repository here, so its workflows need a token to check it out.
       AGENT_ACTIONS_READ_TOKEN: ${{ secrets.AGENT_ACTIONS_READ_TOKEN }}
+      # To resolve fixed review threads: a GitHub App.
+      AGENT_ACTIONS_CLIENT_ID: ${{ secrets.AGENT_ACTIONS_CLIENT_ID }}
+      AGENT_ACTIONS_APP_KEY: ${{ secrets.AGENT_ACTIONS_APP_KEY }}
