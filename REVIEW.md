@@ -4,5 +4,6 @@
 - For a change of `services/orders/orders/models.py`, `services/orders/orders/app.py` or `contracts/`, use the `api-contract-review` skill and ask the `contract-reviewer`.
 - For a change that computes, rounds, converts or formats an amount, use the `money-review` skill.
 - For a change under `services/web/`, ask the `web-reviewer`.
+- For a change of code under `services/`, use the `production-errors` skill.
 - If a pull request changes behaviour and has no test for it, say so in a note.
 - The numbers of `tools/prod_stats` are a snapshot. Name the tool and the value when a finding rests on one.

@@ -2,7 +2,7 @@
 name: web-reviewer
 description: Reviews TypeScript changes under services/web for type safety and for the rules of that package. Use it when a pull request touches services/web.
 tools: Read, Grep, Glob, mcp__pr__get_diff
-model: haiku
+model: sonnet
 ---
 
 You review the changes of one pull request under `services/web`.
