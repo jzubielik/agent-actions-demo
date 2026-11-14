@@ -1,9 +1,13 @@
 """Builds an invoice from a paid order. Amounts are Decimal in the major unit of the currency."""
+import logging
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
 # Digits after the decimal point, for currencies that do not have two.
 EXPONENTS = {"JPY": 0, "KRW": 0, "BHD": 3, "KWD": 3}
+
+
+log = logging.getLogger(__name__)
 
 
 class InvoiceError(Exception):
@@ -51,10 +55,13 @@ def build_invoice(order: dict, vat_rate: Decimal) -> Invoice:
     )
     discount = major(order["discount_minor"], currency)
     net = major(order["total_minor"], currency)
-    # The order's total is what the customer paid; an invoice that adds up to something else
-    # must not go out.
-    if sum((line.amount for line in lines), Decimal(0)) - discount != net:
-        raise InvoiceError(f"order {order['id']}: the lines and the discount do not add up to the total")
     cent = Decimal(1).scaleb(-EXPONENTS.get(currency, 2))
+    # The order's total is what the customer paid; an invoice that adds up to something else
+    # must not go out. A difference of one minor unit is rounding, not a wrong order.
+    difference = sum((line.amount for line in lines), Decimal(0)) - discount - net
+    if abs(difference) > cent:
+        raise InvoiceError(f"order {order['id']}: the lines and the discount do not add up to the total")
+    if difference:
+        log.warning("order %s: invoiced with a rounding difference of %s", order["id"], difference)
     vat = (net * vat_rate).quantize(cent, rounding=ROUND_HALF_UP)
     return Invoice(order["id"], order["customer_id"], currency, lines, discount, net, vat, net + vat)
