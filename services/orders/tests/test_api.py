@@ -3,13 +3,13 @@ def test_a_new_order_is_a_draft_with_its_amounts(client, new_order):
     assert response.status_code == 201
     order = response.json()
     assert order["status"] == "draft"
-    assert (order["subtotal_minor"], order["discount_minor"], order["total_minor"]) == (3097, 0, 3097)
+    assert (order["subtotal_minor"], order["total_minor"]) == (3097, 3097)
     assert [item["sku"] for item in order["items"]] == ["book", "pen"]
 
 
 def test_a_discount_code_lowers_the_total(client, new_order):
     order = client.post("/orders", json={**new_order, "discount_code": "SPRING10"}).json()
-    assert (order["discount_minor"], order["total_minor"]) == (310, 2787)
+    assert (order["subtotal_minor"] - order["total_minor"], order["total_minor"]) == (310, 2787)
 
 
 def test_an_unknown_or_inactive_code_is_refused_and_nothing_is_stored(client, new_order):

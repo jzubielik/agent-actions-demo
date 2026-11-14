@@ -32,7 +32,6 @@ class Order(BaseModel):
     items: list[Item]
     discount_code: str | None
     subtotal_minor: int
-    discount_minor: int
     total_minor: int
     created_at: str = Field(description="UTC, ISO 8601")
 

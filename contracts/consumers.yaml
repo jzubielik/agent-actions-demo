@@ -23,7 +23,6 @@ web:
     - items[].quantity
     - items[].unit_price_minor
     - subtotal_minor
-    - discount_minor
     - total_minor
     - created_at
   GET /orders:

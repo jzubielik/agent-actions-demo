@@ -141,8 +141,6 @@ export interface components {
             customer_id: string;
             /** Discount Code */
             discount_code: string | null;
-            /** Discount Minor */
-            discount_minor: number;
             /** Id */
             id: string;
             /** Items */

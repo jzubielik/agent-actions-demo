@@ -18,7 +18,7 @@ test("a draft shows its lines, amounts and that it can be placed", () => {
 });
 
 test("a discount is shown as a negative amount", () => {
-  const summary = summarize({ ...order, discount_code: "SPRING10", discount_minor: 270, total_minor: 2429 }, "en-IE");
+  const summary = summarize({ ...order, discount_code: "SPRING10", total_minor: 2429 }, "en-IE");
   expect(summary.discount).toBe("-€2.70");
   expect(summary.total).toBe("€24.29");
 });

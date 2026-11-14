@@ -41,6 +41,8 @@ export function summarize(order: Order, locale: string): OrderSummary {
     canPlace: order.status === "draft",
     canCancel: order.status === "draft" || order.status === "placed",
   };
-  if (order.discount_minor > 0) summary.discount = money(-order.discount_minor);
+  // The discount is what the order takes off its subtotal.
+  const discount = order.subtotal_minor - order.total_minor;
+  if (discount > 0) summary.discount = money(-discount);
   return summary;
 }
