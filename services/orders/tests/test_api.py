@@ -81,3 +81,11 @@ def test_lines_cannot_outlive_their_order(client, new_order):
     conn = client.app.state.conn
     conn.execute("DELETE FROM orders WHERE id = ?", (order_id,))
     assert conn.execute("SELECT count(*) FROM order_items").fetchone()[0] == 0
+
+
+def test_orders_can_be_listed_largest_first(client, new_order):
+    small = client.post("/orders", json={**new_order, "items": [{"sku": "pen", "quantity": 1, "unit_price_minor": 199}]}).json()
+    large = client.post("/orders", json=new_order).json()
+    listed = client.get("/orders", params={"customer_id": "c-1", "sort": "largest"}).json()
+    assert [order["id"] for order in listed] == [large["id"], small["id"]]
+    assert client.get("/orders", params={"customer_id": "c-1", "sort": "total_minor; DROP TABLE orders"}).status_code == 422

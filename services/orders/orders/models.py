@@ -11,6 +11,11 @@ class Status(str, Enum):
     cancelled = "cancelled"
 
 
+class Sort(str, Enum):
+    newest = "newest"
+    largest = "largest"
+
+
 class Item(BaseModel):
     sku: str = Field(min_length=1, max_length=64)
     quantity: int = Field(gt=0, le=10_000)

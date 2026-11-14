@@ -122,6 +122,12 @@ components:
       - detail
       title: Problem
       type: object
+    Sort:
+      enum:
+      - newest
+      - largest
+      title: Sort
+      type: string
     Status:
       enum:
       - draft
@@ -190,6 +196,12 @@ paths:
           minimum: 1
           title: Limit
           type: integer
+      - in: query
+        name: sort
+        required: false
+        schema:
+          $ref: '#/components/schemas/Sort'
+          default: newest
       responses:
         '200':
           content:
