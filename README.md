@@ -2,6 +2,8 @@
 
 A small order system that uses [agent-actions](https://github.com/jzubielik/agent-actions) on its pull requests: an AI review with a merge gate, and the `/agent` command. The system is real enough to break in the ways real systems do: three services, one API contract between them, database migrations and a CI that checks each of these.
 
+To see it at work, open the [example pull requests](#example-pull-requests).
+
 ## The system
 
 | Part | What it is |
@@ -51,8 +53,19 @@ Each piece is a file you can copy into your own repository.
 
 All of these are read from the base branch of a pull request, so a pull request cannot change the rules it is judged by.
 
-Secrets and variables of this repository:
+## Example pull requests
 
-- `ANTHROPIC_KEY`: the API key of the model.
-- `AGENT_ACTIONS_READ_TOKEN`: needed because agent-actions is a private repository here; see "A private copy" in its README.
-- `AGENT_ACTIONS_RUNNER`: the label of the self-hosted runner the jobs use.
+These pull requests stay open, each to show one case. Their descriptions, review comments and the budget comment show what the review and `/agent` did.
+
+| Pull request | What it shows |
+|---|---|
+| [#4](https://github.com/jzubielik/agent-actions-demo/pull/4) Removes a response field that billing reads | `contract-reviewer` finds the reader in `consumers.yaml` and quotes the failing CI jobs. After two `/agent` fixes the review still asks for the field, with the production error rate from `prod_stats`. |
+| [#6](https://github.com/jzubielik/agent-actions-demo/pull/6) An index on `orders` | `[migration]`: built in one statement on 48.2M rows, with the numbers from `table_stats`. |
+| [#7](https://github.com/jzubielik/agent-actions-demo/pull/7) A column on `discount_codes` | The same kind of migration on 340 rows gets no lock finding. A `CHECK` that lets malformed dates in is found, and `/agent` fixes it. |
+| [#8](https://github.com/jzubielik/agent-actions-demo/pull/8) `ORDER BY` from a fixed map in an f-string | No SQL injection finding, as the rule allows it. A test that could not fail is noted; after `/agent` fixes it, the review finds that sorting mixes currencies. |
+| [#9](https://github.com/jzubielik/agent-actions-demo/pull/9) A discount percentage with a fraction | `[money]`: a float rounds an exact half down, with an input that shows the wrong cent. `/agent` moves it to `Decimal`. |
+| [#10](https://github.com/jzubielik/agent-actions-demo/pull/10) The order history rows | `web-reviewer`: an `any` against the package rules, and a cast that hides a status with no badge. |
+| [#12](https://github.com/jzubielik/agent-actions-demo/pull/12) When an order was paid | A field that nothing writes: every paid order returns `paid_at: null`. |
+| [#13](https://github.com/jzubielik/agent-actions-demo/pull/13) An invoice tolerance of one cent | A change that hides a production error instead of fixing it, and an API key committed in a test. |
+| [#17](https://github.com/jzubielik/agent-actions-demo/pull/17) The invoice email | The pull request loosens the money rule in `CLAUDE.md` for its own code. The review judges it by the rule on `main`; `/agent` fixes the code and leaves the rule to a person. |
+| [#18](https://github.com/jzubielik/agent-actions-demo/pull/18) A pytest bump | A change with nothing to find: no findings, 5/5. |
