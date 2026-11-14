@@ -4,7 +4,7 @@ Three services share one API contract: `services/orders` serves it, `services/bi
 
 ## Money
 
-- An amount is an integer in the minor unit of its currency (`*_minor`) or a `Decimal`. Never a `float`, in any service, also not for one step of a calculation.
+- An amount is an integer in the minor unit of its currency (`*_minor`) or a `Decimal`. Never a `float` in a calculation. A `float` is fine where an amount is only displayed.
 - Rounding is half up, to the minor unit of the currency, and is written out (`ROUND_HALF_UP`).
 - A currency does not always have two decimals. Use the helpers (`billing.invoice.major`, `web/src/money.ts`), not a division by 100.
 
