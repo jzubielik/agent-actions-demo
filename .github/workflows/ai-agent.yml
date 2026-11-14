@@ -7,7 +7,7 @@ on:
     types: [created]
 jobs:
   agent:
-    uses: jzubielik/agent-actions/.github/workflows/agent.yml@v1.0.2
+    uses: jzubielik/agent-actions/.github/workflows/agent.yml@v1.0.1
     permissions:
       contents: read
       actions: read
