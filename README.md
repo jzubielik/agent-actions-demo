@@ -45,8 +45,8 @@ Each piece is a file you can copy into your own repository.
 | `/agent` | `.github/workflows/ai-agent.yml` | A comment `/agent <request>` changes the code or answers a question |
 | Rules | `CLAUDE.md`, `services/*/AGENTS.md` | What the code must keep to: money, SQL, the contract, tests, secrets. A change that breaks one is a finding |
 | Review instructions | `REVIEW.md` | Which skill and which subagent the review uses for which kind of change |
-| Skills | `.claude/skills/` | Three checklists of this team: `api-contract-review`, `migration-review`, `money-review` |
-| Subagents | `.claude/agents/` | `migration-reviewer` reads production numbers, `contract-reviewer` reads the consumer registry and the CI logs, `web-reviewer` checks the TypeScript on a cheaper model |
+| Skills | `.claude/skills/` | Four checklists of this team: `api-contract-review`, `migration-review`, `money-review`, `production-errors` |
+| Subagents | `.claude/agents/` | `migration-reviewer` reads production numbers, `contract-reviewer` reads the consumer registry and the CI logs, `web-reviewer` checks the TypeScript of the web client |
 | MCP server | `tools/prod_stats`, named in `mcp_config` of `ai-review.yml` | Gives the review `table_stats` and `recent_errors`. It starts from the base branch and needs nothing installed |
 
 All of these are read from the base branch of a pull request, so a pull request cannot change the rules it is judged by.
