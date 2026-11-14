@@ -259,6 +259,44 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Order
+  /orders/{order_id}/cancel:
+    post:
+      description: Cancels an order that is not paid yet. A paid order is refunded,
+        not cancelled.
+      operationId: cancel_order_orders__order_id__cancel_post
+      parameters:
+      - in: path
+        name: order_id
+        required: true
+        schema:
+          title: Order Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: Successful Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          description: No order with this id
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+          description: The status of the order does not allow this
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Cancel Order
   /orders/{order_id}/pay:
     post:
       operationId: pay_order_orders__order_id__pay_post

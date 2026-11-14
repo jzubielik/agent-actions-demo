@@ -21,8 +21,8 @@ class WrongStatus(Exception):
 
 # Which status an order may move to.
 TRANSITIONS = {
-    Status.draft: {Status.placed},
-    Status.placed: {Status.paid},
+    Status.draft: {Status.placed, Status.cancelled},
+    Status.placed: {Status.paid, Status.cancelled},
 }
 
 

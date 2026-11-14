@@ -70,4 +70,9 @@ def create_app(database: str | None = None) -> FastAPI:
     def pay_order(order_id: str, conn: Db) -> Order:
         return move(order_id, Status.paid, conn)
 
+    @app.post("/orders/{order_id}/cancel", response_model=Order, responses=transition)
+    def cancel_order(order_id: str, conn: Db) -> Order:
+        """Cancels an order that is not paid yet. A paid order is refunded, not cancelled."""
+        return move(order_id, Status.cancelled, conn)
+
     return app
