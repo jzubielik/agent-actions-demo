@@ -53,7 +53,13 @@ def test_a_cancelled_order_is_not_invoiced(api, orders):
 def test_an_order_that_does_not_add_up_is_not_invoiced(orders, paid_order):
     order = orders.get_order(paid_order())
     with pytest.raises(InvoiceError, match="do not add up"):
-        build_invoice({**order, "total_minor": order["total_minor"] - 1}, VAT)
+        build_invoice({**order, "total_minor": order["total_minor"] - 2}, VAT)
+
+
+def test_a_rounding_difference_of_one_minor_unit_is_invoiced(orders, paid_order):
+    order = orders.get_order(paid_order())
+    invoice = build_invoice({**order, "total_minor": order["total_minor"] - 1}, VAT)
+    assert invoice.net == Decimal("30.96")
 
 
 def test_paid_orders_of_a_customer_are_listed(orders, paid_order):
