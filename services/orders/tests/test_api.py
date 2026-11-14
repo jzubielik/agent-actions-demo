@@ -1,3 +1,8 @@
+import sqlite3
+
+import pytest
+
+
 def test_a_new_order_is_a_draft_with_its_amounts(client, new_order):
     response = client.post("/orders", json=new_order)
     assert response.status_code == 201
@@ -89,3 +94,13 @@ def test_an_expired_code_is_refused_and_one_that_ends_today_still_works(client, 
     conn.execute("INSERT INTO discount_codes (code, percent, expires_at) VALUES ('LAST', 10, date('now'))")
     assert client.post("/orders", json={**new_order, "discount_code": "GONE"}).status_code == 422
     assert client.post("/orders", json={**new_order, "discount_code": "LAST"}).json()["total_minor"] == 2787
+
+
+@pytest.mark.parametrize("expires_at", ["31/12/2026", "tomorrow", "2026-13-45", "2026-11-14 10:00"])
+def test_an_expiry_that_is_not_a_plain_date_is_rejected(client, expires_at):
+    conn = client.app.state.conn
+    with pytest.raises(sqlite3.IntegrityError):
+        conn.execute(
+            "INSERT INTO discount_codes (code, percent, expires_at) VALUES ('BAD', 10, ?)",
+            (expires_at,),
+        )
