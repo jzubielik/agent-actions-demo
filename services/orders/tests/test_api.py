@@ -81,3 +81,16 @@ def test_lines_cannot_outlive_their_order(client, new_order):
     conn = client.app.state.conn
     conn.execute("DELETE FROM orders WHERE id = ?", (order_id,))
     assert conn.execute("SELECT count(*) FROM order_items").fetchone()[0] == 0
+
+
+def test_orders_can_be_listed_largest_first(client, new_order):
+    large = client.post("/orders", json=new_order).json()
+    small = client.post("/orders", json={**new_order, "items": [{"sku": "pen", "quantity": 1, "unit_price_minor": 199}]}).json()
+    # The large order is the older one, so only sort=largest puts it first.
+    conn = client.app.state.conn
+    conn.execute("UPDATE orders SET created_at = ? WHERE id = ?", ("2000-01-01T00:00:00+00:00", large["id"]))
+    largest = client.get("/orders", params={"customer_id": "c-1", "sort": "largest"}).json()
+    assert [order["id"] for order in largest] == [large["id"], small["id"]]
+    newest = client.get("/orders", params={"customer_id": "c-1"}).json()
+    assert [order["id"] for order in newest] == [small["id"], large["id"]]
+    assert client.get("/orders", params={"customer_id": "c-1", "sort": "total_minor; DROP TABLE orders"}).status_code == 422

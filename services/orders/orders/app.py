@@ -7,7 +7,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 
 from . import repository
 from .db import connect
-from .models import NewOrder, Order, Problem, Status
+from .models import NewOrder, Order, Problem, Sort, Status
 
 
 def create_app(database: str | None = None) -> FastAPI:
@@ -49,8 +49,9 @@ def create_app(database: str | None = None) -> FastAPI:
         customer_id: Annotated[str, Query(min_length=1, max_length=64)],
         status: Status | None = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 20,
+        sort: Sort = Sort.newest,
     ) -> list[Order]:
-        return repository.find(conn, customer_id, status, limit)
+        return repository.find(conn, customer_id, status, limit, sort)
 
     def move(order_id: str, to: Status, conn: sqlite3.Connection) -> Order:
         try:

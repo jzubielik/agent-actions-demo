@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 
 from . import pricing
-from .models import Item, NewOrder, Order, Status
+from .models import Item, NewOrder, Order, Sort, Status
 
 
 class UnknownDiscount(Exception):
@@ -18,6 +18,12 @@ class NotFound(Exception):
 class WrongStatus(Exception):
     pass
 
+
+# The ORDER BY of each sort the list offers. The id breaks ties, so a page is stable.
+SORTS = {
+    Sort.newest: "created_at DESC, id",
+    Sort.largest: "total_minor DESC, id",
+}
 
 # Which status an order may move to.
 TRANSITIONS = {
@@ -73,13 +79,13 @@ def get(conn: sqlite3.Connection, order_id: str) -> Order:
     return _order(conn, row)
 
 
-def find(conn: sqlite3.Connection, customer_id: str, status: Status | None, limit: int) -> list[Order]:
+def find(conn: sqlite3.Connection, customer_id: str, status: Status | None, limit: int, sort: Sort = Sort.newest) -> list[Order]:
     query = "SELECT * FROM orders WHERE customer_id = ?"
     values: list[str | int] = [customer_id]
     if status is not None:
         query += " AND status = ?"
         values.append(status.value)
-    query += " ORDER BY created_at DESC, id LIMIT ?"
+    query += f" ORDER BY {SORTS[sort]} LIMIT ?"
     values.append(limit)
     return [_order(conn, row) for row in conn.execute(query, values).fetchall()]
 

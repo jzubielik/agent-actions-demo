@@ -159,6 +159,11 @@ export interface components {
             detail: string;
         };
         /**
+         * Sort
+         * @enum {string}
+         */
+        Sort: "newest" | "largest";
+        /**
          * Status
          * @enum {string}
          */
@@ -191,6 +196,7 @@ export interface operations {
                 customer_id: string;
                 status?: components["schemas"]["Status"] | null;
                 limit?: number;
+                sort?: components["schemas"]["Sort"];
             };
             header?: never;
             path?: never;
