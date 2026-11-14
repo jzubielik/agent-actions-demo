@@ -33,3 +33,8 @@ test("only a draft can be placed", () => {
   expect(summarize({ ...order, status: "placed" }, "en-IE")).toMatchObject({ status: "Waiting for payment", canPlace: false });
   expect(summarize({ ...order, status: "paid" }, "en-IE").canPlace).toBe(false);
 });
+
+test("a paid order shows the day it was paid", () => {
+  const summary = summarize({ ...order, status: "paid", paid_at: "2026-03-05T08:00:00+00:00" }, "en-IE");
+  expect(summary.paid).toBe("5 Mar 2026");
+});

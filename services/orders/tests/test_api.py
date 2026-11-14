@@ -81,3 +81,7 @@ def test_lines_cannot_outlive_their_order(client, new_order):
     conn = client.app.state.conn
     conn.execute("DELETE FROM orders WHERE id = ?", (order_id,))
     assert conn.execute("SELECT count(*) FROM order_items").fetchone()[0] == 0
+
+
+def test_an_order_that_is_not_paid_has_no_payment_date(client, new_order):
+    assert client.post("/orders", json=new_order).json()["paid_at"] is None
