@@ -49,11 +49,13 @@ def build_invoice(order: dict, vat_rate: Decimal) -> Invoice:
         )
         for item in order["items"]
     )
-    discount = major(order["discount_minor"], currency)
+    subtotal = major(order["subtotal_minor"], currency)
     net = major(order["total_minor"], currency)
+    # The discount is what the order takes off its subtotal.
+    discount = subtotal - net
     # The order's total is what the customer paid; an invoice that adds up to something else
     # must not go out.
-    if sum((line.amount for line in lines), Decimal(0)) - discount != net:
+    if sum((line.amount for line in lines), Decimal(0)) != subtotal or discount < 0:
         raise InvoiceError(f"order {order['id']}: the lines and the discount do not add up to the total")
     cent = Decimal(1).scaleb(-EXPONENTS.get(currency, 2))
     vat = (net * vat_rate).quantize(cent, rounding=ROUND_HALF_UP)

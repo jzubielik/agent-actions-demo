@@ -10,7 +10,7 @@ billing:
     - items[].sku
     - items[].quantity
     - items[].unit_price_minor
-    - discount_minor
+    - subtotal_minor
     - total_minor
   GET /orders:
     - "[].id"
