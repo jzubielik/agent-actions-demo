@@ -62,6 +62,13 @@ def test_an_order_whose_total_is_above_its_subtotal_is_not_invoiced(orders, paid
         build_invoice({**order, "total_minor": order["subtotal_minor"] + 1}, VAT)
 
 
+def test_an_order_without_a_discount_code_whose_total_is_below_its_subtotal_is_not_invoiced(orders, paid_order):
+    order = orders.get_order(paid_order())
+    assert order["discount_code"] is None
+    with pytest.raises(InvoiceError, match="do not add up"):
+        build_invoice({**order, "total_minor": order["total_minor"] - 1}, VAT)
+
+
 def test_paid_orders_of_a_customer_are_listed(orders, paid_order):
     first, second = paid_order(), paid_order()
     assert {order["id"] for order in orders.paid_orders("c-1")} == {first, second}
