@@ -81,3 +81,11 @@ def test_lines_cannot_outlive_their_order(client, new_order):
     conn = client.app.state.conn
     conn.execute("DELETE FROM orders WHERE id = ?", (order_id,))
     assert conn.execute("SELECT count(*) FROM order_items").fetchone()[0] == 0
+
+
+def test_an_expired_code_is_refused_and_one_that_ends_today_still_works(client, new_order):
+    conn = client.app.state.conn
+    conn.execute("INSERT INTO discount_codes (code, percent, expires_at) VALUES ('GONE', 10, date('now', '-1 day'))")
+    conn.execute("INSERT INTO discount_codes (code, percent, expires_at) VALUES ('LAST', 10, date('now'))")
+    assert client.post("/orders", json={**new_order, "discount_code": "GONE"}).status_code == 422
+    assert client.post("/orders", json={**new_order, "discount_code": "LAST"}).json()["total_minor"] == 2787

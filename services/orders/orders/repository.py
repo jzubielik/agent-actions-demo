@@ -29,7 +29,12 @@ TRANSITIONS = {
 def _percent(conn: sqlite3.Connection, code: str | None) -> int:
     if code is None:
         return 0
-    row = conn.execute("SELECT percent FROM discount_codes WHERE code = ? AND active = 1", (code,)).fetchone()
+    # A code is valid up to and including its expiry day, in UTC.
+    row = conn.execute(
+        "SELECT percent FROM discount_codes WHERE code = ? AND active = 1"
+        " AND (expires_at IS NULL OR expires_at >= date('now'))",
+        (code,),
+    ).fetchone()
     if row is None:
         raise UnknownDiscount(code)
     return row["percent"]
