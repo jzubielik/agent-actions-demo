@@ -26,6 +26,7 @@ web:
     - discount_minor
     - total_minor
     - created_at
+    - paid_at
   GET /orders:
     - "[].id"
     - "[].status"

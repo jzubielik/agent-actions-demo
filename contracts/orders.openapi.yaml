@@ -92,6 +92,12 @@ components:
             $ref: '#/components/schemas/Item'
           title: Items
           type: array
+        paid_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: UTC, ISO 8601; null until the order is paid
+          title: Paid At
         status:
           $ref: '#/components/schemas/Status'
         subtotal_minor:

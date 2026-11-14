@@ -15,6 +15,8 @@ export interface OrderSummary {
   discount?: string;
   total: string;
   placed: string;
+  // Absent until the order is paid.
+  paid?: string;
   canPlace: boolean;
   // A paid order is refunded, not cancelled, so the page offers no cancel button for it.
   canCancel: boolean;
@@ -29,6 +31,7 @@ const STATUS_LABELS: Record<Status, string> = {
 
 export function summarize(order: Order, locale: string): OrderSummary {
   const money = (minor: number) => formatMinor(minor, order.currency, locale);
+  const date = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
   const summary: OrderSummary = {
     status: STATUS_LABELS[order.status],
     lines: order.items.map((item) => ({
@@ -37,10 +40,11 @@ export function summarize(order: Order, locale: string): OrderSummary {
     })),
     subtotal: money(order.subtotal_minor),
     total: money(order.total_minor),
-    placed: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(order.created_at)),
+    placed: date.format(new Date(order.created_at)),
     canPlace: order.status === "draft",
     canCancel: order.status === "draft" || order.status === "placed",
   };
+  if (order.paid_at) summary.paid = date.format(new Date(order.paid_at));
   if (order.discount_minor > 0) summary.discount = money(-order.discount_minor);
   return summary;
 }

@@ -35,6 +35,7 @@ class Order(BaseModel):
     discount_minor: int
     total_minor: int
     created_at: str = Field(description="UTC, ISO 8601")
+    paid_at: str | None = Field(default=None, description="UTC, ISO 8601; null until the order is paid")
 
 
 class Problem(BaseModel):

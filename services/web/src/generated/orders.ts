@@ -147,6 +147,11 @@ export interface components {
             id: string;
             /** Items */
             items: components["schemas"]["Item"][];
+            /**
+             * Paid At
+             * @description UTC, ISO 8601; null until the order is paid
+             */
+            paid_at?: string | null;
             status: components["schemas"]["Status"];
             /** Subtotal Minor */
             subtotal_minor: number;
