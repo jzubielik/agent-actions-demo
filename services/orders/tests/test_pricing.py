@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 
 from orders import pricing
@@ -28,5 +30,14 @@ def test_a_percentage_outside_the_range_is_refused(percent):
 
 
 def test_a_percentage_can_have_a_fraction():
-    assert pricing.discount(1000, 2.5) == 25
-    assert pricing.discount(2000, 12.5) == 250
+    assert pricing.discount(1000, Decimal("2.5")) == 25
+    assert pricing.discount(2000, Decimal("12.5")) == 250
+
+
+def test_a_fractional_percentage_rounds_an_exact_half_up():
+    # 2.3% of 1500 is exactly 34.5; in float arithmetic it is 34.49999999999999
+    assert pricing.discount(1500, Decimal("2.3")) == 35
+
+
+def test_totals_with_a_fractional_percentage():
+    assert pricing.totals([(1, 1500)], Decimal("2.3")) == (1500, 35, 1465)
