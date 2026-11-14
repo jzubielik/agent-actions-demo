@@ -53,6 +53,19 @@ def test_a_cancelled_order_is_not_invoiced(api, orders):
 def test_an_order_that_does_not_add_up_is_not_invoiced(orders, paid_order):
     order = orders.get_order(paid_order())
     with pytest.raises(InvoiceError, match="do not add up"):
+        build_invoice({**order, "subtotal_minor": order["subtotal_minor"] - 1}, VAT)
+
+
+def test_an_order_whose_total_is_above_its_subtotal_is_not_invoiced(orders, paid_order):
+    order = orders.get_order(paid_order())
+    with pytest.raises(InvoiceError, match="do not add up"):
+        build_invoice({**order, "total_minor": order["subtotal_minor"] + 1}, VAT)
+
+
+def test_an_order_without_a_discount_code_whose_total_is_below_its_subtotal_is_not_invoiced(orders, paid_order):
+    order = orders.get_order(paid_order())
+    assert order["discount_code"] is None
+    with pytest.raises(InvoiceError, match="do not add up"):
         build_invoice({**order, "total_minor": order["total_minor"] - 1}, VAT)
 
 

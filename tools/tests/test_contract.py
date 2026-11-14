@@ -37,9 +37,9 @@ def test_an_unchanged_contract_and_an_added_field_break_nothing():
 
 
 def test_a_removed_response_field_breaks_every_operation_that_returns_it():
-    problems = changed(lambda schemas, paths: schemas["Order"]["properties"].pop("discount_minor"))
-    assert "GET /orders/{order_id}: response field discount_minor is gone" in problems
-    assert "GET /orders: response field [].discount_minor is gone" in problems
+    problems = changed(lambda schemas, paths: schemas["Order"]["properties"].pop("subtotal_minor"))
+    assert "GET /orders/{order_id}: response field subtotal_minor is gone" in problems
+    assert "GET /orders: response field [].subtotal_minor is gone" in problems
 
 
 def test_a_retyped_field_a_new_enum_value_and_a_removed_operation_break():

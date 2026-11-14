@@ -10,7 +10,8 @@ billing:
     - items[].sku
     - items[].quantity
     - items[].unit_price_minor
-    - discount_minor
+    - discount_code
+    - subtotal_minor
     - total_minor
   GET /orders:
     - "[].id"
@@ -23,7 +24,6 @@ web:
     - items[].quantity
     - items[].unit_price_minor
     - subtotal_minor
-    - discount_minor
     - total_minor
     - created_at
   GET /orders:

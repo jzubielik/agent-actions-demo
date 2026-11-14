@@ -11,7 +11,6 @@ export const order: Order = {
   ],
   discount_code: null,
   subtotal_minor: 2699,
-  discount_minor: 0,
   total_minor: 2699,
   created_at: "2026-03-04T10:15:00+00:00",
 };
