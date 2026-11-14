@@ -96,3 +96,13 @@ def move(conn: sqlite3.Connection, order_id: str, to: Status) -> Order:
     if changed == 0:
         raise WrongStatus(f"the order is no longer {current.value}")
     return get(conn, order_id)
+
+
+def paid_totals(conn: sqlite3.Connection, day: str) -> dict[str, int]:
+    """The sum of the paid orders created on one UTC day (YYYY-MM-DD), per currency, in minor units."""
+    rows = conn.execute(
+        "SELECT currency, SUM(total_minor) AS total FROM orders"
+        " WHERE created_at >= ? AND created_at < date(?, '+1 day') AND status = ? GROUP BY currency",
+        (day, day, Status.paid.value),
+    ).fetchall()
+    return {row["currency"]: row["total"] for row in rows}

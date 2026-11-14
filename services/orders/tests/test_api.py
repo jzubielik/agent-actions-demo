@@ -1,3 +1,5 @@
+from orders import repository
+
 def test_a_new_order_is_a_draft_with_its_amounts(client, new_order):
     response = client.post("/orders", json=new_order)
     assert response.status_code == 201
@@ -81,3 +83,14 @@ def test_lines_cannot_outlive_their_order(client, new_order):
     conn = client.app.state.conn
     conn.execute("DELETE FROM orders WHERE id = ?", (order_id,))
     assert conn.execute("SELECT count(*) FROM order_items").fetchone()[0] == 0
+
+
+def test_the_daily_report_sums_paid_orders_per_currency(client, new_order):
+    conn = client.app.state.conn
+    paid = client.post("/orders", json=new_order).json()
+    for action in ("place", "pay"):
+        client.post(f"/orders/{paid['id']}/{action}")
+    client.post("/orders", json={**new_order, "currency": "JPY"})
+    conn.execute("UPDATE orders SET created_at = '2026-03-04T23:59:59+00:00'")
+    assert repository.paid_totals(conn, "2026-03-04") == {"EUR": 3097}
+    assert repository.paid_totals(conn, "2026-03-05") == {}
