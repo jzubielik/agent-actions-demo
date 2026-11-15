@@ -16,7 +16,6 @@ jobs:
       id-token: write
     secrets:
       ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_KEY }}
-      AGENT_ACTIONS_READ_TOKEN: ${{ secrets.AGENT_ACTIONS_READ_TOKEN }}
       # To push the agent's commit: a GitHub App.
       AGENT_ACTIONS_CLIENT_ID: ${{ secrets.AGENT_ACTIONS_CLIENT_ID }}
       AGENT_ACTIONS_APP_KEY: ${{ secrets.AGENT_ACTIONS_APP_KEY }}
